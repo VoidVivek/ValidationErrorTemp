@@ -1,0 +1,80 @@
+﻿<Window x:Class="WpfApp3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp3"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="400" >
+    <Window.Resources>
+        <local:CharacteristicInfoRowTemplateSelector x:Key="CharInfoTemplateSelector" />
+        <local:StringToVisibilityConverter x:Key="Converter" />
+        <local:MarginConverter x:Key="MarginConverter" />
+        <DataTemplate x:Key="CounterValueTemplate" DataType="local:CounterValueCharacteristicRow" >
+            <Grid Margin="0,2,0,2" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="labels" x:Name="CCD" />
+                    <ColumnDefinition MinWidth="120" x:Name="cd"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Text="{Binding Path=RowDisplayName}"></TextBlock>
+            <local:NumericUpDownControl Grid.Column="1" Margin="10,2,0,2" HorizontalAlignment="Stretch" MinWidth="150" Value="{Binding SelectedValue, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+               <local:NumericUpDownControl.Style >
+                    <Style TargetType="local:NumericUpDownControl">
+                        <Setter Property="Validation.ErrorTemplate">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <StackPanel Orientation="Vertical" Height="Auto">
+                                        <Border BorderBrush="Red" BorderThickness="1" Height="Auto">
+                                            <AdornedElementPlaceholder />
+                                        </Border>
+                                        <TextBlock Text="{Binding [0].ErrorContent}"></TextBlock>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </local:NumericUpDownControl.Style>
+            </local:NumericUpDownControl>
+            </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Orientation="Vertical"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <ItemsControl Height="Auto" Grid.IsSharedSizeScope="True"  ItemsSource="{Binding Path=ECR}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate >
+                            <GroupBox Width="350" Height="Auto">
+                                <ItemsControl ItemsSource="{Binding Path =DC}" ItemTemplateSelector="{StaticResource CharInfoTemplateSelector}">
+                                    <ItemsControl.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <Trigger Property="Validation.HasError" Value="True">
+                                                    <Setter Property="ItemsControl.Margin" Value="5 10 5 20" />
+                                                </Trigger>
+                                                <Trigger Property="Validation.HasError" Value="False">
+                                                    <Setter Property="ItemsControl.Margin" Value="5 10 5 5" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Validation.ErrorTemplate">
+                                                <Setter.Value>
+                                                    <ControlTemplate>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <AdornedElementPlaceholder x:Name="adornedElementPlaceholder"/>
+                                                            <TextBlock Grid.Column="1" Foreground="Red" Text="{Binding [0].ErrorContent}" Margin="{Binding ElementName=adornedElementPlaceholder, Converter={StaticResource MarginConverter}}"/>
+                                                        </StackPanel>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ItemsControl.Style>
+                                </ItemsControl>
+                            </GroupBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
